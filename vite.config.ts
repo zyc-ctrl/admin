@@ -49,7 +49,15 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
     server: {
       host: true,
       port: VITE_PORT,
-      proxy: createProxy(VITE_PROXY),
+      // proxy: createProxy(VITE_PROXY),
+      proxy: {
+        '/api/dashscope': {
+          target: 'https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation',
+          changeOrigin: true, // 关键：模拟请求来源，解决跨域
+          rewrite: (path) => path.replace(/^\/api\/dashscope/, ''), // 去掉前缀，转发到目标 URL
+          headers: { 'Content-Type': 'application/json' }
+        }
+      }
     },
     optimizeDeps: {
       include: [],
